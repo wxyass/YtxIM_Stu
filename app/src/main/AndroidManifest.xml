@@ -1,0 +1,230 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+          package="et.tsingtaopad">
+
+    <!--//接收IM消息的自定义权限-->
+    <permission
+        android:name="et.tsingtaopad.permission.RECEIVE_MSG"
+        android:protectionLevel="signature"/>
+    <!--//使用接收IM消息权限-->
+    <uses-permission android:name="et.tsingtaopad.permission.RECEIVE_MSG"/>
+    <!--//接收来电的自定义权限-->
+    <permission
+        android:name="et.tsingtaopad.permission.INCOMING_CALL"
+        android:protectionLevel="signature"/>
+    <!--//使用接收来电权限-->
+    <uses-permission android:name="et.tsingtaopad.permission.INCOMING_CALL"/>
+
+    <!--//以下为必选配置-->
+    <!--//允许程序打开网络sockets-->
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <!--//允许程序访问有关的网络信息-->
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    <!--//允许程序访问Wi-Fi网络状态信息-->
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
+    <!--//允许应用读写用户的外部存储器-->
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+    <!--//允许读取电话的状态-->
+    <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
+    <!--//允许一个程序获取信息有关当前或最近运行的任务，一个缩略的任务状态，是否活动等等-->
+    <uses-permission android:name="android.permission.GET_TASKS"/>
+    <!--//允许程序录制音频-->
+    <uses-permission android:name="android.permission.RECORD_AUDIO"/>
+    <!--//允许应用程序修改全局声音设置的权限-->
+    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS"/>
+    <!--//允许使用PowerManager的WakeLocks在进程休眠时能够后台保持-->
+    <uses-permission android:name="android.permission.WAKE_LOCK"/>
+    <!--//允许请求访问使用照相设备(如果使用视频通话则必选配置)-->
+    <uses-permission android:name="android.permission.CAMERA"/>
+
+    <!--//如需GPS相关权限，可配置以下权限-->
+    <!--//GPS定位权限-->
+    <uses-permission
+        android:name="android.permission.ACCESS_LOCATION_EXTRA_COMMANDS"/>
+    <!--//允许一个程序访问CellID或WiFi热点来获取粗略的位置-->
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <!--//允许读取电话的状态-->
+    <uses-permission
+        android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+    <!--//允许一个程序访问精良位置(如GPS)-->
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+
+
+
+    <application
+        android:name=".IMApplication"
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/AppTheme">
+        <activity android:name=".MainActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+        </activity>
+
+        <!--// SDK核心服务配置-->
+        <service android:name="com.yuntongxun.ecsdk.ECClientService"
+                 android:enabled="true" android:process=":push" />
+
+        <!--// 提高sdk服务存活率（v5.2.2r以后版本提供）-->
+        <service android:name="com.yuntongxun.ecsdk.ECClientService$InnerService"
+                 android:enabled="true" android:process=":push" />
+
+        <!--// 以下两项为SDK内部处理项，其中booter.Alarm在v5.1.9r以后版本提供-->
+        <receiver android:name="com.yuntongxun.ecsdk.booter.CCPReceivers$AlarmReceiver"
+                  android:process=":push"/>
+        <receiver android:name="com.yuntongxun.ecsdk.booter.Alarm"
+                  android:exported="false" android:process=":push"/>
+
+        <!--// SDK网络改变广播-->
+        <receiver
+            android:name="com.yuntongxun.ecsdk.booter.CCPReceivers$ConnectionReceiver"
+            android:process=":push">
+            <intent-filter>
+                <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
+            </intent-filter>
+        </receiver>
+
+        <!--// 声明自定义通知的广播接收器（需要替换包名，详见注意事项）-->
+        <receiver
+            android:name=".service.YuntxNotifyReceiver"
+            android:exported="false">
+            <intent-filter>
+                <!--// 接收push消息-->
+                <!--// action匹配规则{packageName + ".action" + "功能"}-->
+                <!--// com.yuntongxun.imdemo 替换成自己的报名-->
+                <!--// 以下三条action 可以根据自己需求来进行增删-->
+                <!--// 用于电话会议-->
+                <action android:name="com.yuntongxun.imdemo.action.VOIP_CALL" />
+                <!--// 用于IM消息-->
+                <action android:name="com.yuntongxun.imdemo.action.MESSAGE" />
+                <!--// 用于通知点击-->
+                <action android:name="com.yuntongxun.imdemo.action.NOTIFICATION_CLICK" />
+            </intent-filter>
+        </receiver>
+        <!--// 应用处理程序逻辑服务 name为YuntxNotifyReceiver的位置加 $NotifyService-->
+        <service android:name=".service.YuntxNotifyReceiver$NotifyService" />
+
+        <!-- 以下是华为的 -->
+        <!-- 第三方相关 :接收Push消息（注册、Push消息、Push连接状态、标签，LBS上报结果）广播 -->
+        <receiver android:name=".service.HuaWeiReceiver"
+                  android:exported="true">
+            <intent-filter>
+
+                <!-- 必须,用于接收token -->
+                <action android:name="com.huawei.android.push.intent.REGISTRATION" />
+                <!-- 必须，用于接收消息 -->
+                <action android:name="com.huawei.android.push.intent.RECEIVE" />
+                <!-- 可选，用于点击通知栏或通知栏上的按钮后触发onEvent回调 -->
+                <action android:name="com.huawei.android.push.intent.CLICK" />
+                <!-- 可选，查看push通道是否连接，不查看则不需要 -->
+                <action android:name="com.huawei.intent.action.PUSH_STATE" />
+                <!-- 可选，标签、地理位置上报回应，不上报则不需要 -->
+                <action android:name="com.huawei.android.push.plugin.RESPONSE" />
+            </intent-filter>
+
+            <meta-data
+                android:name="CS_cloud_ablitity"
+                android:value="云通讯" />
+        </receiver>
+
+        <!--
+             备注：Push相关的android组件需要添加到业务的AndroidManifest.xml,
+            Push相关android组件运行在另外一个进程是为了防止Push服务异常而影响主业务
+        -->
+        <!-- PushSDK:PushSDK接收外部请求事件入口 -->
+        <receiver
+            android:name="com.huawei.android.pushagent.PushEventReceiver"
+            android:process=":hwpushservice">
+            <intent-filter>
+                <action android:name="com.huawei.android.push.intent.REFRESH_PUSH_CHANNEL" />
+                <action android:name="com.huawei.intent.action.PUSH" />
+                <action android:name="com.huawei.intent.action.PUSH_ON" />
+                <action android:name="com.huawei.android.push.PLUGIN" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.PACKAGE_ADDED" />
+                <action android:name="android.intent.action.PACKAGE_REMOVED" />
+
+                <data android:scheme="package" />
+            </intent-filter>
+        </receiver>
+        <receiver
+            android:name="com.huawei.android.pushagent.PushBootReceiver"
+            android:process=":hwpushservice">
+            <intent-filter>
+                <action android:name="com.huawei.android.push.intent.REGISTER" />
+                <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
+            </intent-filter>
+
+            <meta-data
+                android:name="CS_cloud_version"
+                android:value="\u0032\u0037\u0030\u0035" />
+        </receiver>
+
+        <!-- PushSDK:Push服务 -->
+        <service
+            android:name="com.huawei.android.pushagent.PushService"
+            android:process=":hwpushservice"/>
+
+        <!-- 以下是小米的 -->
+        <service
+            android:name="com.xiaomi.push.service.XMPushService"
+            android:enabled="true"
+            android:process=":xmpushservice" />
+        <service
+            android:name="com.xiaomi.push.service.XMJobService"
+            android:enabled="true"
+            android:exported="false"
+            android:permission="android.permission.BIND_JOB_SERVICE"
+            android:process=":xmpushservice" />
+        <!-- 注：此service必须在3.0.1版本以后（包括3.0.1版本）加入 -->
+        <service
+            android:name="com.xiaomi.mipush.sdk.PushMessageHandler"
+            android:enabled="true"
+            android:exported="true" />
+        <service
+            android:name="com.xiaomi.mipush.sdk.MessageHandleService"
+            android:enabled="true" />
+        <!-- 注：此service必须在2.2.5版本以后（包括2.2.5版本）加入 -->
+        <receiver
+            android:name="com.xiaomi.push.service.receivers.NetworkStatusReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </receiver>
+        <receiver
+            android:name="com.xiaomi.push.service.receivers.PingReceiver"
+            android:exported="false"
+            android:process=":xmpushservice">
+            <intent-filter>
+                <action android:name="com.xiaomi.push.PING_TIMER" />
+            </intent-filter>
+        </receiver>
+        <!-- 小米广播 -->
+        <receiver
+            android:name=".service.XiaoMiPushReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="com.xiaomi.mipush.RECEIVE_MESSAGE" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="com.xiaomi.mipush.MESSAGE_ARRIVED" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="com.xiaomi.mipush.ERROR" />
+            </intent-filter>
+        </receiver>
+
+    </application>
+
+</manifest>
