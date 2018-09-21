@@ -48,6 +48,7 @@ public class AddOthersIntoGroup extends Activity {
 
                 if (!TextUtil.isEmpty(userID)) {
                     list.add(userID);
+
                 }
                 if (!TextUtil.isEmpty(st1)) {
                     list.add(st1);
