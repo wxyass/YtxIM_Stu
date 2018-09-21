@@ -54,17 +54,17 @@ dependencies {
     compile(name: 'Yuntx_Android_Dao_Plugin_v1.4.0', ext: 'aar')
     compile(name: 'Yuntx_Android_IM_Plugin_v1.4.0', ext: 'aar')
     compile(name: 'Yuntx_Android_Photopicker_Plugin_v1.4.0', ext: 'aar')
-    compile 'org.jsoup:jsoup:1.10.1'
-    compile 'io.reactivex:rxjava:1.1.0'
-    compile 'io.reactivex:rxandroid:1.1.0'
-    compile 'com.squareup.okhttp3:logging-interceptor:3.3.0'
-    compile('com.squareup.retrofit2:converter-gson:2.1.0') {
-        transitive = true;
-    }
-    compile 'com.alibaba:fastjson:1.2.17'
-    compile 'org.greenrobot:greendao:3.1.0'
-    compile 'com.github.bumptech.glide:glide:3.6.1'
-    compile 'com.belerweb:pinyin4j:2.5.1'
+//    compile 'org.jsoup:jsoup:1.10.1'
+//    compile 'io.reactivex:rxjava:1.1.0'
+//    compile 'io.reactivex:rxandroid:1.1.0'
+//    compile 'com.squareup.okhttp3:logging-interceptor:3.3.0'
+//    compile('com.squareup.retrofit2:converter-gson:2.1.0') {
+//        transitive = true;
+//    }
+//    compile 'com.alibaba:fastjson:1.2.17'
+//    compile 'org.greenrobot:greendao:3.1.0'
+//    compile 'com.github.bumptech.glide:glide:3.6.1'
+//    compile 'com.belerweb:pinyin4j:2.5.1'
     // compile 'com.davemorrissey.labs:subsampling-scale-image-view:3.6.0'
     implementation files('libs/HwPush_SDK_NOMAP_V2705.jar')
     implementation files('libs/MiPush_SDK_Client_3_2_2.jar')
